@@ -1,0 +1,11 @@
+NÉON-ÉDUQUE — Installation Cloudflare Pages + D1
+
+1. Créer un compte Cloudflare, un projet Pages et une base D1 nommée neon-eduque-db.
+2. Dans D1, exécuter schema.sql (nouvelle installation uniquement). Si une ancienne base a déjà été initialisée, exécuter migration_existing.sql à la place.
+3. Dans les paramètres Pages > Bindings, ajouter une liaison D1 nommée DB vers cette base.
+4. Configurer deux secrets dans Pages : ADMIN_PASSWORD (mot de passe fort et unique) et SESSION_SECRET (chaîne aléatoire d'au moins 32 caractères). Ne jamais les placer dans un fichier public.
+5. Déployer le contenu du dossier comme projet Pages compatible Functions (déploiement Git ou Wrangler). Un simple téléversement de fichiers statiques peut ne pas déployer les fonctions serveur.
+6. Tester /api/availability, l'envoi de réservation, la connexion /admin/, la création d'un client, la confirmation, les chevauchements et le blocage de créneaux.
+7. Configurer les informations légales et une politique de confidentialité avant la collecte réelle. Restreindre l'accès admin, tester sur téléphone et prévoir sauvegardes D1.
+
+LIMITES IMPORTANTES : Stripe/empreinte bancaire non intégré ; e-mails/SMS automatiques non intégrés ; gestion multi-employés non intégrée ; l'agenda affiche des créneaux indicatifs et la validation reste manuelle. Le serveur doit être réellement déployé et testé avant ouverture au public. Le code fourni n'est pas un service déjà hébergé.
