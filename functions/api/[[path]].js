@@ -24,9 +24,9 @@ async function main({request,env,params}){
   const u=new URL(request.url),date=safe(u.searchParams.get('date'),10),service=safe(u.searchParams.get('service'),30);
   if(!validDate(date)||!services[service])return json({error:'Date ou prestation invalide'},400);
   const busy=(await env.DB.prepare("SELECT booking_date,booking_time,duration_minutes FROM bookings WHERE status='confirmed' AND booking_date BETWEEN ? AND ?").bind(new Date(Date.parse(date+'T12:00:00Z')-7*86400000).toISOString().slice(0,10),date).all()).results;
-  const blocks=(await env.DB.prepare('SELECT starts_at,ends_at FROM blocked_times WHERE ends_at>? AND starts_at<?').bind(date+'T00:00',date+'T23:59').all()).results;
+  const blocks=(await env.DB.prepare('SELECT starts_at,ends_at FROM blocked_times WHERE ends_at>? AND starts_at<?').bind(date+'T00:00',new Date(Date.parse(date+'T00:00:00Z')+services[service]*60000+86400000).toISOString().slice(0,16)).all()).results;
   const slots=[];const duration=services[service];const day=new Date(date+'T12:00:00Z').getUTCDay();
-  const windows=day===0?[]:day===6?[[9,12],[14,17]]:[[9,12],[14,18]];
+  const windows=day===0?[]:duration>240?[[service==='garde12'?19:9,(service==='garde12'?19:9)+duration/60]]:day===6?[[9,12],[14,17]]:[[9,12],[14,18]];
   for(const [start,end] of windows)for(let m=start*60;m+duration<=end*60;m+=60){const hh=String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');const begin=Date.parse(date+'T'+hh+':00Z'),finish=begin+duration*60000;
    if(busy.some(b=>{const st=Date.parse(b.booking_date+'T'+b.booking_time+':00Z');return begin<st+b.duration_minutes*60000&&finish>st})||blocks.some(b=>begin<Date.parse(b.ends_at+':00Z')&&finish>Date.parse(b.starts_at+':00Z')))continue;
    slots.push(hh);
