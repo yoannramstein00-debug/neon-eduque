@@ -4,4 +4,4 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "neon-eduque-db"
-database_id = "REMPLACER_PAR_ID_D1"
+database_id = "43a950df-afd1-41fb-86ea-8b7398eaa01b"
